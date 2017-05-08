@@ -23,7 +23,7 @@ def parseArticle(url):
     #print (article.html)
     print(article.title)
     print(article.text)
-     
+
 
 
 parseFeed() #Toimii
