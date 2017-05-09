@@ -1,5 +1,5 @@
 import feedparser
-import bs4
+import bs4 as bs
 from newspaper import Article
 
 import bs4
@@ -23,17 +23,30 @@ def parseArticle(url):
     global authors
     global date
     global title
+
     article = Article(url)
     article.download()
     article.parse()
+    sauce= article.html
     authors = article.authors
-    title =  article.title
+    title = article.title
     date = article.publish_date
-   # print(article.text)
+    #print(article.text)
+    #print(article.summary)
+   # len(article.summary)
+    make_soup(sauce)
+
+def make_soup(sauce):
+    soup = bs.BeautifulSoup(sauce, 'lxml')
+    #print(soup.find_all('p'))
+   # print(soup.title.text)
+
+    for para in soup.find_all('p'):
+        print(para.text + '\n')
+#    print(soup.get_text())
 
 
+parseFeed()
+print('Article title: ' + title)
+# print(authors)
 
-parseFeed() #Toimii
-
-print(title)
-print(authors)
