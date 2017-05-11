@@ -41,7 +41,7 @@ def parseArticle(url):
 
 def make_soup(sauce):
     soup = bs.BeautifulSoup(sauce, 'lxml')
-    parseMTV3(soup)
+    parseNews(soup,MTV3_ARTICLE_CLASS)
     #print(soup.find_all('p'))
    # print(soup.title.text)
 
@@ -49,10 +49,7 @@ def make_soup(sauce):
 
 #    print(soup.get_text())
 
-def parseArticle(soup, CLASS_NAME):
-    article = soup.findAll("div", {"class": CLASS_NAME})
-    for para in article:
-        print(para.text)
+
 
 
 
@@ -70,9 +67,11 @@ def parseYLE(soup):
     for para in article:
         print(para.text)
 
-   # for para in soup.find_all('p'):
-    #    print(para.text + '\n')
-
+def parseNews(soup,articleClass):
+    article = soup.findAll("div", {"class": articleClass})
+    # print(article)
+    for para in article:
+        print(para.text)
 
 
 
