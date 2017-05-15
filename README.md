@@ -1,4 +1,5 @@
 # NewsFeed
 # Program fetch rss feed from the web
-##Author Petri Lamminaho
+## Author Petri Lamminaho
 ## Project stared fifth of May 2017 (5.5.2017)
+## Uses
