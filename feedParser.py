@@ -33,12 +33,13 @@ class Summarizer:
         return freq
 
     def _summarize(self, text, n):
-        # print("Luokka tulostaa" + text)
+
         sents = sent_tokenize(text)
         print(sents)
         assert n <= len(sents)
-        #words = [word_tokenize(s.lower)for s in sents]
-        words = word_tokenize(text)
+
+        #words = [word_tokenize for s in sents]
+        words = word_tokenize(text.lower())
         print(words)
         self._freq = self._compute_words(words)
         ranking = defaultdict(int)
@@ -51,7 +52,8 @@ class Summarizer:
         #print( sents_ids[0])
         for j in sents_ids:
             print(j)
-        print(sents[0])
+        print(len(sents))
+        print(sents[3])
 
         #return [sents[j] for j in sents_ids]
 
@@ -134,18 +136,20 @@ def parseYLE(soup):
 
 
 def parseNews(soup, articleClass):
-    news = ""
+    #news = ""
     [s.extract() for s in soup('style')]
-    article = soup.findAll("div", {"class": articleClass}, "p")
+    [a.extract() for a in soup('a')]
+    text = ' '.join(map(lambda p: p.text, soup.find_all('p')))
+   # article = soup.findAll("div", {"class": articleClass}, "p")
     # print(article)
-    for para in article:
-        news = news + para.text
+    #for para in article:
+     #   news = news + para.text
         # print(para.text)
 
     # print(news)
 
     summary = Summarizer()
-    summary._summarize(news, 2)
+    summary._summarize(text, 3)
 
 
 parseFeed()
