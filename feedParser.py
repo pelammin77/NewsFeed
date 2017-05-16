@@ -1,3 +1,4 @@
+
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from collections import defaultdict
@@ -33,6 +34,26 @@ class Summarizer:
         return freq
 
     def _summarize(self, text, n):
+        sents = sent_tokenize(text)
+        assert n <= len(sents)
+        word_sent = [word_tokenize(s.lower()) for s in sents]
+        self._freq = self._compute_words(word_sent)
+        ranking = defaultdict(int)
+        for i, sent in enumerate(word_sent):
+            for w in sent:
+                if w in self._freq:
+                    ranking[i] += self._freq[w]
+        sents_idx = self._rank(ranking, n)
+
+        return [sents[j] for j in sents_idx]
+    def _rank(self, ranking, n):
+        r = nlargest(n, ranking, key=ranking.get)
+        # print(r)
+        return r
+
+
+"""
+    def _summarize(self, text, n):
 
         sents = sent_tokenize(text)
         print(sents)
@@ -48,17 +69,22 @@ class Summarizer:
                 if w in self._freq:
                     ranking[i] += self._freq[w]
         sents_ids = self._rank(ranking, n)
-        #print(len(sents))
-        #print( sents_ids[0])
-        for j in sents_ids:
-            print(j)
+        print(sents_ids)
         print(len(sents))
-        print(sents[3])
+        print(sents[])
 
         #return [sents[j] for j in sents_ids]
+       """
 
-    def _rank(self, ranking, n):
-        return nlargest(n, ranking, key=ranking.get)
+
+
+
+#    def _rank(self, ranking, n):
+ #       r = nlargest(n, ranking, key=ranking.get)
+        #print(r)
+  #      return r
+
+
 
 
 MTV3_ARTICLE_CLASS = 'editorial'
@@ -138,7 +164,7 @@ def parseYLE(soup):
 def parseNews(soup, articleClass):
     #news = ""
     [s.extract() for s in soup('style')]
-    [a.extract() for a in soup('a')]
+    [s.extract() for s in soup('a')]
     text = ' '.join(map(lambda p: p.text, soup.find_all('p')))
    # article = soup.findAll("div", {"class": articleClass}, "p")
     # print(article)
@@ -149,9 +175,11 @@ def parseNews(soup, articleClass):
     # print(news)
 
     summary = Summarizer()
-    summary._summarize(text, 3)
 
+    for s in summary._summarize(text, 4):
+        print('*', s)
 
 parseFeed()
 # print('Article title: ' + title)
 # print(authors)
+
