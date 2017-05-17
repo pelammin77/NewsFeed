@@ -1,4 +1,3 @@
-
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from collections import defaultdict
@@ -6,12 +5,8 @@ from string import punctuation
 from heapq import nlargest
 import feedparser
 import bs4 as bs
-# import nltk, re, pprint
-# from nltk import word_tokenize
 from newspaper import Article
 
-
-# from urllib.request import urlopen as uReq
 
 class Summarizer:
     def __init__(self, min_sum=0.1, max_sum=0.9):
@@ -34,8 +29,12 @@ class Summarizer:
         return freq
 
     def _summarize(self, text, n):
+
+        text = text.strip()
         sents = sent_tokenize(text)
         assert n <= len(sents)
+        print(len(sents))
+        print(sents)
         word_sent = [word_tokenize(s.lower()) for s in sents]
         self._freq = self._compute_words(word_sent)
         ranking = defaultdict(int)
@@ -46,57 +45,41 @@ class Summarizer:
         sents_idx = self._rank(ranking, n)
 
         return [sents[j] for j in sents_idx]
+
     def _rank(self, ranking, n):
         r = nlargest(n, ranking, key=ranking.get)
         # print(r)
         return r
 
-
-"""
-    def _summarize(self, text, n):
-
-        sents = sent_tokenize(text)
-        print(sents)
-        assert n <= len(sents)
-
-        #words = [word_tokenize for s in sents]
-        words = word_tokenize(text.lower())
-        print(words)
-        self._freq = self._compute_words(words)
-        ranking = defaultdict(int)
-        for i, sent in enumerate(words):
-            for w in sent:
-                if w in self._freq:
-                    ranking[i] += self._freq[w]
-        sents_ids = self._rank(ranking, n)
-        print(sents_ids)
-        print(len(sents))
-        print(sents[])
-
-        #return [sents[j] for j in sents_ids]
-       """
-
-
-
-
-#    def _rank(self, ranking, n):
- #       r = nlargest(n, ranking, key=ranking.get)
-        #print(r)
-  #      return r
-
-
-
-
+'''
 MTV3_ARTICLE_CLASS = 'editorial'
 YLE_ARTICLE_CLASS = 'yle__article__content'
 authors = ""
 title = ""
 date = ""
+'''
 
+class Parser:
+    def __init__(self, link):
+        self._link = link
+        #self.title = ""
+
+
+    def parse_feed(self):
+        self._feeds = feedparser.parse(self._link)
+
+
+
+    def make_soup(self, soup):
+        pass
+
+
+    def parse_news(self, soup):
+        pass
 
 def parseFeed():
-    # feeds = feedparser.parse('http://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET')
-    feeds = feedparser.parse('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
+    feeds = feedparser.parse('http://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET')
+    #feeds = feedparser.parse('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
     for post in feeds.entries:
         print("")
         # print(post.title + ': ' + post.link + "\n")
@@ -118,30 +101,16 @@ def parseArticle(url):
     authors = article.authors
     title = article.title
     date = article.publish_date
-
-    # print(article.text)
-    # print(article.summary)
-    # len(article.summary)
     make_soup(sauce)
 
 
 def make_soup(sauce):
     soup = bs.BeautifulSoup(sauce, 'html.parser')
-    # text = soup.find_all('p')
-    # text = ' '.join(map(lambda p: p.text, soup.find_all('p')))
-    # print(text)
-    parseNews(soup, MTV3_ARTICLE_CLASS)
-    # parseMTV3(soup)
-    # print(soup.find_all('p'))
-    # print(soup.title.text)
-
-
-#    print(soup.get_text())
-
+    parseNews(soup)
 
 def article_tokenizer():
     post_text = feedparser.parse('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
-    post_text['feed']['titlr']
+    post_text['feed']['title']
 
 
 def parseMTV3(soup):
@@ -161,25 +130,16 @@ def parseYLE(soup):
         print(para.text)
 
 
-def parseNews(soup, articleClass):
-    #news = ""
+def parseNews(soup):
+    # news = ""
     [s.extract() for s in soup('style')]
     [s.extract() for s in soup('a')]
     text = ' '.join(map(lambda p: p.text, soup.find_all('p')))
-   # article = soup.findAll("div", {"class": articleClass}, "p")
-    # print(article)
-    #for para in article:
-     #   news = news + para.text
-        # print(para.text)
-
-    # print(news)
-
     summary = Summarizer()
+    for s in summary._summarize(text, 5):
+        print('* ' + s)
 
-    for s in summary._summarize(text, 4):
-        print('*', s)
 
 parseFeed()
 # print('Article title: ' + title)
 # print(authors)
-
