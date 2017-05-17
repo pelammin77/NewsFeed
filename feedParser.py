@@ -78,8 +78,8 @@ class Parser:
         pass
 
 def parseFeed():
-    feeds = feedparser.parse('http://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET')
-    #feeds = feedparser.parse('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
+    #feeds = feedparser.parse('http://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET')
+    feeds = feedparser.parse('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
     for post in feeds.entries:
         print("")
         # print(post.title + ': ' + post.link + "\n")
@@ -113,30 +113,15 @@ def article_tokenizer():
     post_text['feed']['title']
 
 
-def parseMTV3(soup):
-    # soup.find('p', attrs={'class': 'lead'})
-    article = soup.findAll('p', "div", {"class": MTV3_ARTICLE_CLASS})
-
-    print(article)
-    # for para in article:
-    # print(para.string)
-    # print(para.string)
-
-
-def parseYLE(soup):
-    article = soup.findAll("div", {"class": YLE_ARTICLE_CLASS})
-    # print(article)
-    for para in article:
-        print(para.text)
-
-
 def parseNews(soup):
     # news = ""
     [s.extract() for s in soup('style')]
     [s.extract() for s in soup('a')]
+    title = soup.find('title').text
     text = ' '.join(map(lambda p: p.text, soup.find_all('p')))
     summary = Summarizer()
-    for s in summary._summarize(text, 5):
+    print(title)
+    for s in summary._summarize(text, 3):
         print('* ' + s)
 
 
