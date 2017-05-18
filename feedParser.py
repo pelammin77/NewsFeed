@@ -61,21 +61,49 @@ date = ""
 
 class Parser:
     def __init__(self, link):
-        self._link = link
-        #self.title = ""
-
-
-    def parse_feed(self):
-        self._feeds = feedparser.parse(self._link)
+        self.__link = link
+        self._text =""
+        self._title= ""
 
 
 
-    def make_soup(self, soup):
-        pass
+    def __parse_feed(self):
+        self._feeds = feedparser.parse(self.__link)
+        news = self._feeds.entries[1]
+        print(news.link)
+       # parseArticle(news.link)
+
+        article = Article(news.link)
+        article.download()
+        article.parse()
+        self._sauce = article.html
+        self._authors = article.authors
+        self._title = article.title
+        self._publish_date = article.publish_date
+        self.__make_soup()
+
+    def __make_soup(self): # private
+        self.__soup = bs.BeautifulSoup(self._sauce, 'html.parser')
+        self.__parse_news()
+
+    def __parse_news(self): # private
+
+        [s.extract() for s in self.__soup('style')]
+        [s.extract() for s in self.__soup('a')]
+        self._title = self.__soup.find('title').text
+        self._text = ' '.join(map(lambda p: p.text, self.__soup.find_all('p')))
+
+    def get_news(self):
+        self.__parse_feed()
+        return self._title, self._text
 
 
-    def parse_news(self, soup):
-        pass
+
+
+
+
+
+
 
 def parseFeed():
     #feeds = feedparser.parse('http://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET')
@@ -125,6 +153,13 @@ def parseNews(soup):
         print('* ' + s)
 
 
-parseFeed()
+#parseFeed()
 # print('Article title: ' + title)
 # print(authors)
+
+parser = Parser('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
+title, text = parser.get_news()
+summary = Summarizer()
+print(title)
+for s in summary._summarize(text, 3):
+    print('* ' + s)
