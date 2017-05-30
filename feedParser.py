@@ -1,18 +1,26 @@
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
+from nltk.corpus import wordnet
 from collections import defaultdict
 from string import punctuation
 from heapq import nlargest
 import feedparser
 import bs4 as bs
 from newspaper import Article
+import re, math
+from collections import Counter
 
 
 class Summarizer:
     def __init__(self, min_sum=0.1, max_sum=0.9):
         self._min_sum = min_sum
         self._max_sum = max_sum
-        self._stopwords = set(stopwords.words('finnish') + list(punctuation))
+        self._stopwords = set(stopwords.words('english') + list(punctuation))
+
+
+
+    def _find_common_words(self):
+        pass
 
     def _compute_words(self, words_sen):
         freq = defaultdict(int)
@@ -36,6 +44,7 @@ class Summarizer:
         print(len(sents))
         print(sents)
         word_sent = [word_tokenize(s.lower()) for s in sents]
+        #print(word_sent.most_common(15))
         self._freq = self._compute_words(word_sent)
         ranking = defaultdict(int)
         for i, sent in enumerate(word_sent):
@@ -64,8 +73,6 @@ class Parser:
         self.__link = link
         self._text =""
         self._title= ""
-
-
 
     def __parse_feed(self):
         self._feeds = feedparser.parse(self.__link)
@@ -105,61 +112,11 @@ class Parser:
 
 
 
-def parseFeed():
-    #feeds = feedparser.parse('http://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET')
-    feeds = feedparser.parse('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
-    for post in feeds.entries:
-        print("")
-        # print(post.title + ': ' + post.link + "\n")
 
-    news = feeds.entries[1]
-    print(news.link)
-    parseArticle(news.link)
-
-
-def parseArticle(url):
-    global authors
-    global date
-    global title
-
-    article = Article(url)
-    article.download()
-    article.parse()
-    sauce = article.html
-    authors = article.authors
-    title = article.title
-    date = article.publish_date
-    make_soup(sauce)
-
-
-def make_soup(sauce):
-    soup = bs.BeautifulSoup(sauce, 'html.parser')
-    parseNews(soup)
-
-def article_tokenizer():
-    post_text = feedparser.parse('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
-    post_text['feed']['title']
-
-
-def parseNews(soup):
-    # news = ""
-    [s.extract() for s in soup('style')]
-    [s.extract() for s in soup('a')]
-    title = soup.find('title').text
-    text = ' '.join(map(lambda p: p.text, soup.find_all('p')))
-    summary = Summarizer()
-    print(title)
-    for s in summary._summarize(text, 3):
-        print('* ' + s)
-
-
-#parseFeed()
-# print('Article title: ' + title)
-# print(authors)
-
-parser = Parser('http://www.mtv.fi/api/feed/rss/uutiset_uusimmat')
+parser = Parser('http://rss.cnn.com/rss/edition.rss')
 title, text = parser.get_news()
+
 summary = Summarizer()
 print(title)
-for s in summary._summarize(text, 3):
+for s in summary._summarize(text, 1):
     print('* ' + s)
