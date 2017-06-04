@@ -118,5 +118,5 @@ title, text = parser.get_news()
 
 summary = Summarizer()
 print(title)
-for s in summary._summarize(text, 1):
+for s in summary._summarize(text, 2):
     print('* ' + s)

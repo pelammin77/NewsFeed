@@ -40,6 +40,12 @@ def get_tags(sen, tag='NNP'):
     print(propernouns)
 
 
+def search_text(key_text, seach_line):
+    seach_result = re.search(key_text, seach_line, re.M|re.I)
+    if seach_result:
+        print("Text " + seach_result.group() + " found")
+    else:
+        print("Text not found")
 
 
 
@@ -48,7 +54,7 @@ text1 = "White House communications director quits"
 text2 = 'White House communications director Mike Dubke is leaving the administration, ' \
         'he said Tuesday, amid swirling speculation about a possible Trump staff shakeup.'
 text3 = 'Putin meets Trump'
-text4 = 'Trump and Putin meets'
+text4 = 'Trump meets Putin'
 text5 = 'Trump is Russian spy'
 
 vector1 = text_to_vector(text3)
@@ -56,6 +62,9 @@ vector2 = text_to_vector(text4)
 
 cosine = get_cos(vector1, vector2)
 
+
+
+
 print('cosine', cosine)
 get_tags(text1)
-get_tags(text4)
+get_tags(text2)
